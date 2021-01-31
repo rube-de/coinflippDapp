@@ -66,7 +66,45 @@ var abi = [
                 "type": "address"
             }
         ],
+        "name": "lostFlip",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "player",
+                "type": "address"
+            }
+        ],
         "name": "payout",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "player",
+                "type": "address"
+            }
+        ],
+        "name": "wonFlip",
         "type": "event"
     },
     {
@@ -130,7 +168,7 @@ var abi = [
         "outputs": [
             {
                 "internalType": "bool",
-                "name": "",
+                "name": "won",
                 "type": "bool"
             }
         ],
@@ -163,7 +201,7 @@ var abi = [
         "type": "function"
     },
     {
-        "constant": false,
+        "constant": true,
         "inputs": [],
         "name": "getPlayerBalance",
         "outputs": [
@@ -174,7 +212,7 @@ var abi = [
             }
         ],
         "payable": false,
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
     }
 ]

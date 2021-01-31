@@ -8,6 +8,8 @@ contract CoinFlip is Ownable{
     event coinFlipped(uint bettingAmount, address player);
     event balancedRaised(uint value, address raiser);
     event payout(uint amount, address player);
+    event wonFlip(uint amount, address player);
+    event lostFlip(uint amount, address player);
 
     event changeBalance(uint balance);
 
@@ -24,6 +26,9 @@ contract CoinFlip is Ownable{
             //player won
             require(balance >= bettingAmount *2, "Contract balance needs to be higher than winning amount");
             playerBalance[msg.sender] = bettingAmount *2;
+            emit wonFlip(bettingAmount *2, msg.sender);
+        }else{
+            emit lostFlip(bettingAmount, msg.sender);
         }
         emit coinFlipped(bettingAmount, msg.sender);
         return result > 0;
