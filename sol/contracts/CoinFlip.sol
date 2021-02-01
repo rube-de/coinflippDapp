@@ -1,8 +1,9 @@
 pragma solidity 0.5.12;
 
 import "./Ownable.sol";
+import "./provableAPI.sol";
 
-contract CoinFlip is Ownable{
+contract CoinFlip is Ownable, usingProvable{
     uint public balance;
 
     event coinFlipped(uint bettingAmount, address player);
