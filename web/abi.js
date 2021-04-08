@@ -1,4 +1,23 @@
-var abi = [
+var abi =[
+    {
+        "inputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "msg",
+                "type": "string"
+            }
+        ],
+        "name": "LogNewProvableQuery",
+        "type": "event"
+    },
     {
         "anonymous": false,
         "inputs": [
@@ -36,6 +55,18 @@ var abi = [
         "inputs": [
             {
                 "indexed": false,
+                "internalType": "bytes32",
+                "name": "queryId",
+                "type": "bytes32"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "won",
+                "type": "bool"
+            },
+            {
+                "indexed": false,
                 "internalType": "uint256",
                 "name": "bettingAmount",
                 "type": "uint256"
@@ -48,6 +79,25 @@ var abi = [
             }
         ],
         "name": "coinFlipped",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "queryId",
+                "type": "bytes32"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "randomNumber",
+                "type": "uint256"
+            }
+        ],
+        "name": "generatedRandomNumber",
         "type": "event"
     },
     {
@@ -67,6 +117,31 @@ var abi = [
             }
         ],
         "name": "lostFlip",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "player",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "queryId",
+                "type": "bytes32"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "newCoinFlip",
         "type": "event"
     },
     {
@@ -125,6 +200,21 @@ var abi = [
     {
         "constant": true,
         "inputs": [],
+        "name": "latestNumber",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
         "name": "owner",
         "outputs": [
             {
@@ -141,13 +231,7 @@ var abi = [
         "constant": false,
         "inputs": [],
         "name": "doCoinFlip",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
+        "outputs": [],
         "payable": true,
         "stateMutability": "payable",
         "type": "function"
@@ -159,21 +243,6 @@ var abi = [
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "getFlipResult",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "won",
-                "type": "bool"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -213,6 +282,81 @@ var abi = [
         ],
         "payable": false,
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "_myid",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "string",
+                "name": "_result",
+                "type": "string"
+            }
+        ],
+        "name": "__callback",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "_queryId",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "string",
+                "name": "_result",
+                "type": "string"
+            },
+            {
+                "internalType": "bytes",
+                "name": "_proof",
+                "type": "bytes"
+            }
+        ],
+        "name": "__callback",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "update",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "testRandom",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
         "type": "function"
     }
 ]
