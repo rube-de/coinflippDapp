@@ -2,14 +2,15 @@ pragma solidity 0.5.12;
 
 import "./Ownable.sol";
 import "./provableAPI.sol";
+import "./SafeMath.sol";
 
 contract CoinFlip is Ownable, usingProvable{
-    uint public balance;
+    using SafeMath for uint256;
 
+    uint public balance;
 
     mapping (bytes32 => address) private playerQuery;
     mapping (bytes32 => uint) private randomResult;
-    //address[] private players;
     mapping(address => Player) players;
 
     uint256 constant NUM_RANDOM_BYTES_REQUESTED = 1;
@@ -41,15 +42,15 @@ contract CoinFlip is Ownable, usingProvable{
       //  update();
     }
 
-    function _createPlayer(address _adr, uint _betAmount) private returns(Player){
+    function _createPlayer(address _adr, uint _betAmount) private returns(Player storage){
         players[_adr] = Player(_adr,_betAmount, 0, false);
         return players[_adr];
     }
 
     function doCoinFlip() public payable {
         require (address(this).balance >= msg.value.mul(2), "Contract balance needs to be higher than winning amount");
-        Player currentPlayer;
-        if(players[msg.sender] != null){
+        Player memory currentPlayer;
+        if(players[msg.sender].betAmount > 0){
             require (players[msg.sender].isPlaying == false, "Currently in game");
             currentPlayer = players[msg.sender];
             currentPlayer.betAmount = msg.value;
@@ -61,21 +62,21 @@ contract CoinFlip is Ownable, usingProvable{
         playerQuery[queryId] = msg.sender;
         balance += msg.value;
         emit changeBalance(balance);
-        emit newCoinFlip(msg.sender, queryId, bettingAmount);
+        emit newCoinFlip(msg.sender, queryId, msg.value);
     }
 
     function calculateResult(bytes32 queryId) private {
         uint result = randomResult[queryId];
-        Player player = players[playerQuery[queryId]];
+        Player memory player = players[playerQuery[queryId]];
         if(result == 1){
             //player won
             require(balance >= player.betAmount *2, "Contract balance needs to be higher than winning amount");
             player.balance += player.betAmount *2;
             emit coinFlipped(queryId, true, player.betAmount,player.adr);
-            emit wonFlip(bettingAmount, player);
+            emit wonFlip(player.betAmount, player.adr);
         }else{
             emit coinFlipped(queryId, false, player.betAmount,player.adr);
-            emit lostFlip(bettingAmount, player);
+            emit lostFlip(player.betAmount, player.adr);
         }
     }
 
@@ -87,14 +88,6 @@ contract CoinFlip is Ownable, usingProvable{
         msg.sender.transfer(prizeAmount);
         players[msg.sender].balance = 0;
         emit payout(prizeAmount, msg.sender);
-    }
-
-    function getFlipResult() public view returns (bool won){
-        return playerBalance[msg.sender] > 0;
-    }
-
-    function random() private view returns (uint){
-        return now % 2;
     }
 
     function loadPrizePool() public payable {
@@ -110,11 +103,11 @@ contract CoinFlip is Ownable, usingProvable{
     }
 
     function getPlayerBalance() public view returns(uint){
-        return playerBalance[msg.sender];
+        return players[msg.sender].balance;
     }
 
     function __callback(bytes32 _queryId, string memory _result, bytes memory _proof) public {
-        //require(msg.sender == provable_cbAddress());
+        require(msg.sender == provable_cbAddress());
         uint256 randomNumber = uint256(keccak256(abi.encodePacked(_result))) % 2;
         randomResult[_queryId] = randomNumber;
         emit generatedRandomNumber(_queryId, randomNumber);
@@ -124,23 +117,25 @@ contract CoinFlip is Ownable, usingProvable{
     function update() payable public returns (bytes32){
         uint256 QUERY_EXECUTION_DELAY = 0;
         uint256 GAS_FOR_CALLBACK = 200000;
-      /*  bytes32 queryId = provable_newRandomDSQuery(
-        QUERY_EXECUTION_DELAY,
-        NUM_RANDOM_BYTES_REQUESTED,
-        GAS_FOR_CALLBACK
-        );*/
-        bytes32 queryId = testRandom();
+        bytes32 queryId = provable_newRandomDSQuery(
+            QUERY_EXECUTION_DELAY,
+            NUM_RANDOM_BYTES_REQUESTED,
+            GAS_FOR_CALLBACK
+        );
+        //bytes32 queryId = testRandom();
         emit LogNewProvableQuery("Provable query was sent, standing by for answer");
         return queryId;
     }
 
+    //for local testing
     function testRandom() public returns(bytes32){
         bytes32 queryId = bytes32(keccak256(abi.encodePacked(msg.sender)));
         __callback(queryId, "1", bytes("test"));
         return queryId;
     }
 
-    function callCallback(bytes32 queryId) public {
-        __callback(queryId, "1", bytes("test"));
+    //for local testing
+    function random() private view returns (uint){
+        return now % 2;
     }
 }
