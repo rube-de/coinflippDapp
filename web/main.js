@@ -11,11 +11,20 @@ $(document).ready(function() {
         getPlayerBalance();
         getPoolBalance();
 
-        contractInstance.events.wonFlip((err, ev) => {
+        contractInstance.events.wonFlip({
+            filter: {player: playerAddress},
+            fromBlock: 0
+        },(err, ev) => {
             $("#result_event").text("you have won");
         });
-        contractInstance.events.lostFlip((err, ev) => {
+        contractInstance.events.lostFlip({
+            filter: {player: playerAddress},
+            fromBlock: 0
+        },(err, ev) => {
             $("#result_event").text("you have lost, try again");
+        });
+        contractInstance.events.generatedRandomNumber((err, ev) => {
+            console.log("new rand no: " + ev.returnValues.queryId);
         });
     });
     $("#flip_coin_button").click(flipCoin);
@@ -34,6 +43,7 @@ function flipCoin(){
         .on("transactionHash", hash => {
             console.log("hash: " + hash);
             $.blockUI({ message: "<h1>flipping the coin...</h1>" });
+            getFlipResult();
         })
         .on("confirmation", confirmationNr => {
             console.log("confirmation: " + confirmationNr);
@@ -47,21 +57,16 @@ function flipCoin(){
         },function(error,event){
             console.log("call Callback");
             console.log(event.returnValues.queryId);
-            getFlipResult();
+
         });
-
-   // getFlipResult();
-
 }
 
-function getFlipResult(queryId){
+function getFlipResult(){
     console.log("call flipresult");
-    //contractInstance.callCallback(queryId);
     contractInstance.once("coinFlipped", {
         filter: {player: playerAddress},
         fromBlock: 0
      },function(error,event){
-            console.log("event: " + event);
             console.log("event: " + event.returnValues.won);
             getPlayerBalance();
             $.unblockUI();
