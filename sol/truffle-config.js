@@ -17,12 +17,12 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
+require('dotenv').config();
 
  const HDWalletProvider = require('@truffle/hdwallet-provider');
- const infuraKey = "4b87b189a5fa4e9a8417f42471f97f95";
+ const infuraKey = process.env.INFURA_KEY;
 //
- const fs = require('fs');
- const mnemonic = fs.readFileSync(".secret").toString().trim();
+  const mnemonic = process.env.MNEMONIC.toString().trim();
 
 module.exports = {
   /**
